@@ -1,0 +1,62 @@
+model new
+program load contactmodelmechanical 'contactmodelmechanical3d_macroelement_07_debug.dll'
+model domain extent -1.7 1.7
+
+ball create radius 1.35e-3 group 'dt0' position 0 0 0
+ball create radius 1.35e-3 group 'dt1' position 0.06 0 0
+
+program call 'load_properties'
+
+contact cmat proximity 0.06
+contact cmat apply
+model clean
+contact property lin_mode 1
+contact method bond gap 4
+model energy mechanical on
+model large-strain on
+model mechanical timestep fix 1e-7
+[disp = 0]
+[force = 0]
+fish hist @disp
+fish hist @force
+
+ball fix velocity
+ball fix spin
+ball attribute density 2700 
+ball attribute spin-y 10.0 range id 2
+ball attribute velocity-x 1.0e-3 range id 2
+model orientation-tracking on
+[b = ball.find(2)]
+[c = ball.contactmap(b,1)]
+ball history euler-y id 2
+ball history moment-contact-y id 2
+def getWp 
+
+c = ball.contactmap(b)
+loop foreach cc c
+;io.out(contact.prop(cc,'me_wp'))
+wp = contact.prop(cc,'me_wp')
+omegap = contact.prop(cc,'me_omegap')
+up = contact.prop(cc,'me_up')
+M = contact.prop(cc,'me_moment')
+force = contact.prop(cc,'me_force')
+FZ = contact.force.local.z(cc)
+Br = contact.branch.x(cc)/2
+MD = -contact.prop(cc,'me_moment_damaged')
+
+endloop
+end
+[wp = 0]
+[omegap=0]
+[M=0]
+[up = 0]
+[MM = 0]
+fish history @wp
+fish history @up
+fish history @omegap
+fish history @M
+fish history @MD
+
+
+fish callback add @getWp -1
+cy; 1000

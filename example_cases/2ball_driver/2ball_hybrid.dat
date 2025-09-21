@@ -1,5 +1,5 @@
 model new
-program load contactmodelmechanical 'contactmodelmechanical3d_macroelement_07_debug.dll'
+program load contactmodelmechanical '../contactmodelmechanical3dmacroelement007.dll'
 model domain extent -1.7 1.7
 
 ball create radius 1.35e-3 group 'dt0' position 0 0 0

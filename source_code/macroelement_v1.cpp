@@ -1799,9 +1799,11 @@ namespace cmodelsxd {
 				d_u = d_u_tot;
 				d_omega = d_omega_tot;
 			}
-			else 
-				throw Exception("There is an issue with finding the yieldf after plasticity?");
-			
+			else {
+				char buffer[100];
+				sprintf(buffer,"Cannot find the yield surface, f: %.2e, ftrial: $.2e",f,ftrial);
+				throw Exception(buffer);
+			}
 		
 			if (iteration > max_iter)
 				break;
@@ -1816,7 +1818,8 @@ namespace cmodelsxd {
 		double up_increment = updated_state.u_p_ - initial_state.u_p_;
 
 		if (updated_state.moment_ < 0)
-			throw Exception("Negative moment ???");
+			updated_state.moment_ = 0.0;
+			//throw Exception("Negative moment ???");
 		if (up_increment<0)
 			throw Exception("Negative plastic strain increment?");
 
